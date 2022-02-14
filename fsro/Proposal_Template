@@ -1,0 +1,74 @@
+								Project<Title>
+
+Description:
+	File system recursive operating(fsro),this program is a file system recursive operates tool.It always start at current directory and recursivily entry the subdirectory,does which operation assigned by user to each file.Before progress,a filter be required to match operated target.
+
+Design reason:
+	I wanna get the directory size from a tree of directories.To abstract that,fsro was designed.
+
+Structure:
+	C++ programming language build it.
+	Basical model are :
+		Configure file checking,      (path of operation procedure | arguments for it)
+		Operation procedure checking, (existed? execuatable?)
+		Init procedure,
+		Output content building,
+		Output procedure,
+		Traverse directories procedure,
+		Filter link manager,
+
+
+Logic order:
+	Using C++ class technology.
+
+	Check config files ->
+	Check operation procedure ->
+	Init ->
+	Get into working from current directory ->
+	Close program
+
+Feature design:
+	Configure checking:
+		  '#' as annotation,config file will named "fsro.cfg".The file has only one statement that pointed which operation would to exec.
+		  Filter is a C object source file and named "fsro_filter.o".It contains a function definition that like 'int fsroFilter(const void *filename)'
+		  In progress,program must checks the files were existed and program has permissions on them.If had not meet the condition,then exit.
+
+	Init:
+		  Apply memory,set parameters and link filter.
+		  Memory of Space to saves output contents,alignment character array,operation procedure output array.
+		  Parameters'composition is pipeFD,exec result,memory size indicated variable value,filter position in memory.
+
+	Output:
+		  Could be non output,that as a switch in main(),option '-n' means dont output,option '-h' means get help.
+		  And output style like a tree,subdirectory has more alignment characters.
+		  The target which output from fsro like this : "<alignment char><name>:<status code> <operation output>".
+		  To build output contents by snprintf().
+
+	Main procedure:
+		  It is a recursive function,the first time use "."(exec directory) as argument.In recursiving,the argument could be directory name or
+		  file name,which was selected across filter to filtes them.If argument is directory,recursive procedure would entry it to get next.
+		  The working on current node is before next recursiving.The working is exec operation procedure with current target and build output 
+		  content then put them on termination.
+
+	Shutdown:
+		  Use C++ destroy function to clear environment and exit program.
+
+Develop environment:
+	Linux 3.10 (CentOS 7)
+	gcc 9.3
+	glibc 2.17
+
+Debug or Other:
+	TODO:
+		1> delete[] throw error while delete a space of memory from new []
+		2> Cant use mmap link filter and invoke it
+		3> overflow while Main()
+
+Complement:
+	The configure file "fsro.cfg" must have 'read' permission on it.
+	The operation procedure must have 'execuatable' permission on it.
+	The filter file must have 'read' permission on it.
+	Program will use mmap() to link filter into its process space.And position assigned by kernel,open MAP_EXEC flag.
+
+Version:
+	0.1
