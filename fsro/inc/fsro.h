@@ -41,8 +41,8 @@
 #define KB			1024
 #define MB			(KB * KB)
 
-#define OUTPUTSIZE		(KB / 8)
-#define ALIGNMENTSIZE		(KB / 32)
+#define OUTPUTSIZE		(KB / 2)
+#define ALIGNMENTSIZE		(KB / 16)
 
 #define EXECPARS_NUMBER	34	// total of args at most is 32
 
