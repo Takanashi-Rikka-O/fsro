@@ -64,6 +64,7 @@ namespace fsrospace{
     _operationArgs[EXECPARS_NUMBER-1]=NULL;	// Last one is NULL as end of exec parameters
 
     _endOfexecPara=0;
+    _targetIndexOfexec=0;
 
     // Major message only one statement
     _fileContentBufferSize=_operationParaLength*EXECPARS_NUMBER+_operationPathSize+32;
@@ -88,12 +89,12 @@ namespace fsrospace{
     else;
 
     if (_endOfexecPara != 0){
-      for (int iterator(0); iterator < _endOfexecPara; ++ iterator)
+      for (int iterator(0); iterator < _targetIndexOfexec+1; ++iterator)
 	if (_operationArgs[iterator])
 	  delete[] _operationArgs[iterator],_operationArgs[iterator]=NULL;
 	else;
 
-      for (int iterator(_endOfexecPara+2); iterator < EXECPARS_NUMBER-1; ++iterator)
+      for (int iterator(_endOfexecPara+1); iterator < EXECPARS_NUMBER-1; ++iterator)
 	if (_operationArgs[iterator])
 	  delete[] _operationArgs[iterator],_operationArgs[iterator]=NULL;
 	else;
@@ -193,25 +194,41 @@ namespace fsrospace{
 
 
     // exec path
-    if ((pos=strchr(temppointer,' ')) != NULL){
-      *pos='\0';
+    pos=strchr(temppointer,' ');
+    if (pos == NULL){
+      // In this case,nothing of arg was followed.
       strcpy(_operationExec,temppointer);
+      _targetIndexOfexec=0;
+      _endOfexecPara=_targetIndexOfexec+1;
+      return 0;
+
     }
     else{
-      fsroError=CFG_READFAIL;
-      return -1;
+      *pos='\0';
+      strcpy(_operationExec,temppointer);
+      temppointer=pos+1;
     }
-    temppointer=pos+1;
 
     // exec para
-    while ((pos=strchr(temppointer,' ')) != NULL){
+    while (1){
+      pos=strchr(temppointer,' ');
+
+      // If pos == NULL,it's possible temppointer point to the last arg
+      if (pos == NULL){
+	strcpy(_operationPara[cycleIterator],temppointer);
+	++cycleIterator;
+	break;
+      }
+      else;
+
       *pos='\0';
       strcpy(_operationPara[cycleIterator],temppointer);
       temppointer=pos+1;
-      ++cycleIterator;
+      ++cycleIterator;      
     }
 
-    _endOfexecPara=cycleIterator;
+    _targetIndexOfexec=cycleIterator;
+    _endOfexecPara=_targetIndexOfexec+1;
     return 0;
   }
 
@@ -234,11 +251,11 @@ namespace fsrospace{
       execFsroErrorBC(fsroError);
     else{
       // will set end of parameters be there.
-      delete[] _operationPara[_endOfexecPara];
-      _operationPara[_endOfexecPara]=NULL;		// file name will put in there
+      delete[] _operationPara[_targetIndexOfexec];
+      _operationPara[_targetIndexOfexec]=NULL;		// file name will put in there
 
-      delete[] _operationPara[_endOfexecPara+1];	// end of execv() args
-      _operationPara[_endOfexecPara+1]=NULL;
+      delete[] _operationPara[_endOfexecPara];	// end of execv() args
+      _operationPara[_endOfexecPara]=NULL;
     }
 
     _fsroInitStatus=1;
@@ -305,7 +322,7 @@ namespace fsrospace{
 	result=NO;
 
       fsroError=FSRO_SUCCESS;
-      if (fsroGenerateOutput("%s %s %s\n",currentDir->d_name,result,_pipeMessage) < 0)
+      if (fsroGenerateOutput("%s %s %s",currentDir->d_name,result,_pipeMessage) < 0)
 	execFsroErrorBC(fsroError);
       else
 	cout<<_alignmentCharacters<<_outputContents;
@@ -344,7 +361,7 @@ namespace fsrospace{
 
     termOut=dup(STDOUT_FILENO);
     dup2(_pipeFD[1],STDOUT_FILENO);	// Open new pipe fd that would use by exec program
-    _operationPara[_endOfexecPara]=target;
+    _operationPara[_targetIndexOfexec]=target;
 
     if ((forkReturn=fork()) < 0)
       execFsroErrorBC(FSRO_FORKFAULT);
@@ -368,7 +385,7 @@ namespace fsrospace{
     }
     else{
       (void)close(_pipeFD[0]);			// child process doesnt read pipe
-      execv(_operationExec,_operationPara);	// child process exec
+      execv(_operationExec,_operationArgs);	// child process exec
     }
 
     (void)close(_pipeFD[0]);

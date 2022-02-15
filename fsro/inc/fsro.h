@@ -147,7 +147,9 @@ extern int fsroError;
 
 	      size_t _operationParaLength;	// option length for each
 	      char *_operationArgs[EXECPARS_NUMBER];	// exec args max
-	      unsigned int _endOfexecPara;
+
+	      unsigned int _endOfexecPara;	// _operationArgs[this-value] contains NULL pointer as end
+	      unsigned int _targetIndexOfexec;	// _operationArgs[this-value] contains file path
 
 	      ifstream _readCfg;
 
