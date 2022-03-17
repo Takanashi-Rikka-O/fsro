@@ -23,22 +23,27 @@
 #define _ALGO_H_
 
 #include<cstddef>
-#include"Base64.h"
+#include<cstring>
+#include<stdlib.h>
+#include"base64.h"
 
-#define HASHP2C "XJwd!fGZib<l,)Opq<(tuvCayhSnERkm"	// Maping A->B.
-#define HASHK2C "xbedPfvhSzW+-1m}?@#tQ&c(%Hsq;a<>"	// Maping x'->B.
-#define HASHLISTLEN 32
-#define HASHLISTLENGTH HASHLISTLEN + 1
+#define HASHP2C 	"XJwd!fGZib<l,)Opq|(tuvCayhSnERkm"	// Maping A->B.
+#define HASHK2C 	"xbedPfvhSzW+-1m}?@#tQ&c(%Hsq;a<>"	// Maping x'->B.
+#define HASHLISTLEN 	32
+#define HASHLISTLENGTH 	HASHLISTLEN + 1
 
-#define SCALE_VALUE 1193
+// error code
+#define EMEMAPPLY	16
+
+#define SCALE_VALUE 	7
 
 namespace cryptor {
 
   class Cryptor {
   private:
 
-    char *_hashlist_of_p2c;
-    char *_hashlist_of_k2c;
+    char *_hashlist_of_p2c;		// remainder
+    char *_hashlist_of_k2c;		// quotient
     size_t _list_length;
     size_t _division;
     unsigned short int _resort_distance;
@@ -52,12 +57,22 @@ namespace cryptor {
     Cryptor();
     Cryptor(unsigned int sort_distance);
     ~Cryptor();
-    Cryptor(const Cyptor & cryptor);
+    Cryptor(const Cryptor & cryptor);
 
     int init_Cryptor(void);
 
-    char *decode(const char *buffer,size_t len);
-    char *encode(const char *buffer,size_t len);
+    void sort_hashlist(void);
+
+    void set_keyword_value(unsigned short int x);
+
+    char *decode(const char *input_buffer,size_t input_len,
+		 char *output_buffer,size_t output_len);
+    char *encode(const char *input_buffer,size_t input_len,
+		 char *output_buffer,size_t output_len);
+
+    template<typename TYPE> TYPE scale_element(TYPE x){
+      return (x * _scale);
+    }
 
 
   };

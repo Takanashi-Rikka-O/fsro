@@ -20,12 +20,12 @@
 //		2> Now _Base64_Encode_ function had have normally working.
 //		3> Contains into a named space.
 
-#include"Base64.h"
+#include"base64.h"
 
-namespace BASE64{
+namespace base64 {
 
 /* Data structures */
-static const char *BASE64_MAP="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";	/* Mapping table,length is 65Bytes. */
+static const char *BASE64_MAP = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";	/* Mapping table,length is 65Bytes. */
 
 /* Functions definition. */
 
@@ -83,7 +83,7 @@ static unsigned short int _Search_Index_(char c)
 	//	Return
 }
 
-char *_Base64_Encode_(const char *PlainText,char *Buffer,size_t Len_Buff)
+char *base64_encode(const char *PlainText,char *Buffer,size_t Len_Buff)
 {
 	/*
 	 * Return Buffer on success,return NULL on failed.
@@ -190,7 +190,7 @@ char *_Base64_Encode_(const char *PlainText,char *Buffer,size_t Len_Buff)
 	//	Return
 }
 
-char *_Base64_Decode_(const char *CipherText,char *Buffer,size_t Len_Buff)
+char *base64_decode(const char *CipherText,char *Buffer,size_t Len_Buff)
 {
 	/*
 	 * CipherText must be length equal to a value multiple of 4.

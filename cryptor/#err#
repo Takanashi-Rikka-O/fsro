@@ -1,0 +1,213 @@
+csrc/cryptor.cpp: In function ‘int main(int, char**)’:
+src/cryptor.cpp:68:3: error: ‘Cryptor’ was not declared in this scope; did you mean ‘cryptor::Cryptor’?
+   68 |   Cryptor cpt;
+      |   ^~~~~~~
+      |   cryptor::Cryptor
+In file included from inc/cryptor.h:20,
+                 from src/cryptor.cpp:18:
+inc/algo.h:42:9: note: ‘cryptor::Cryptor’ declared here
+   42 |   class Cryptor {
+      |         ^~~~~~~
+src/cryptor.cpp:78:6: error: ‘cpt’ was not declared in this scope
+   78 |  if (cpt.encode(toencode,strlen(toencode),todecode,DECODEBUFF_SIZE))
+      |      ^~~
+src/cryptor.cpp:79:4: error: ‘cout’ was not declared in this scope; did you mean ‘std::cout’?
+   79 |    cout<<todecode<<endl;
+      |    ^~~~
+      |    std::cout
+In file included from src/cryptor.cpp:19:
+/usr/local/include/c++/9.3.0/iostream:61:18: note: ‘std::cout’ declared here
+   61 |   extern ostream cout;  /// Linked to standard output
+      |                  ^~~~
+src/cryptor.cpp:79:20: error: ‘endl’ was not declared in this scope; did you mean ‘std::endl’?
+   79 |    cout<<todecode<<endl;
+      |                    ^~~~
+      |                    std::endl
+In file included from /usr/local/include/c++/9.3.0/iostream:39,
+                 from src/cryptor.cpp:19:
+/usr/local/include/c++/9.3.0/ostream:599:5: note: ‘std::endl’ declared here
+  599 |     endl(basic_ostream<_CharT, _Traits>& __os)
+      |     ^~~~
+src/cryptor.cpp:90:6: error: ‘cpt’ was not declared in this scope
+   90 |  if (cpt.decode(todecode,strlen(todecode),toencode,ENCODEBUFF_SIZE))
+      |      ^~~
+src/cryptor.cpp:91:4: error: ‘cout’ was not declared in this scope; did you mean ‘std::cout’?
+   91 |    cout<<toencode<<endl;
+      |    ^~~~
+      |    std::cout
+In file included from src/cryptor.cpp:19:
+/usr/local/include/c++/9.3.0/iostream:61:18: note: ‘std::cout’ declared here
+   61 |   extern ostream cout;  /// Linked to standard output
+      |                  ^~~~
+src/cryptor.cpp:91:20: error: ‘endl’ was not declared in this scope; did you mean ‘std::endl’?
+   91 |    cout<<toencode<<endl;
+      |                    ^~~~
+      |                    std::endl
+In file included from /usr/local/include/c++/9.3.0/iostream:39,
+                 from src/cryptor.cpp:19:
+/usr/local/include/c++/9.3.0/ostream:599:5: note: ‘std::endl’ declared here
+  599 |     endl(basic_ostream<_CharT, _Traits>& __os)
+      |     ^~~~
+src/cryptor.cpp:101:7: error: ‘cpt’ was not declared in this scope
+  101 |       cpt.set_keyword_value(optarg - '\0');
+      |       ^~~
+src/cryptor.cpp: In function ‘void cryptor_help()’:
+src/cryptor.cpp:117:3: error: ‘cerr’ was not declared in this scope; did you mean ‘std::cerr’?
+  117 |   cerr<<"usage: cryptor [ -eds ] argument"<<endl
+      |   ^~~~
+      |   std::cerr
+In file included from src/cryptor.cpp:19:
+/usr/local/include/c++/9.3.0/iostream:62:18: note: ‘std::cerr’ declared here
+   62 |   extern ostream cerr;  /// Linked to standard error (unbuffered)
+      |                  ^~~~
+src/cryptor.cpp:117:45: error: ‘endl’ was not declared in this scope; did you mean ‘std::endl’?
+  117 |   cerr<<"usage: cryptor [ -eds ] argument"<<endl
+      |                                             ^~~~
+      |                                             std::endl
+In file included from /usr/local/include/c++/9.3.0/iostream:39,
+                 from src/cryptor.cpp:19:
+/usr/local/include/c++/9.3.0/ostream:599:5: note: ‘std::endl’ declared here
+  599 |     endl(basic_ostream<_CharT, _Traits>& __os)
+      |     ^~~~
+src/cryptor.cpp: In function ‘int getopt(int, char* const*, const char*)’:
+src/cryptor.cpp:139:31: error: invalid conversion from ‘char’ to ‘const char*’ [-fpermissive]
+  139 |   entry = args[args_pos_record]; // We wish it be a pair like this (- c)
+      |           ~~~~~~~~~~~~~~~~~~~~^
+      |                               |
+      |                               char
+src/cryptor.cpp:36:20: error: invalid types ‘int[int]’ for array subscript
+   36 | #define car(x) (x[0])
+      |                    ^
+src/cryptor.cpp:144:31: note: in expansion of macro ‘car’
+  144 |     if (cdr(entry) != '\0' && car((char **)&cdr(entry) + 1) == '\0') {
+      |                               ^~~
+src/cryptor.cpp:40:7: error: expected primary-expression before ‘unsigned’
+   40 |       unsigned short int cond = 0;  \
+      |       ^~~~~~~~
+src/cryptor.cpp:145:23: note: in expansion of macro ‘if_into_it’
+  145 |       opt_in_optstr = if_into_it(optstring,cdr(entry));
+      |                       ^~~~~~~~~~
+src/cryptor.cpp:40:7: error: expected ‘}’ before ‘unsigned’
+   40 |       unsigned short int cond = 0;  \
+      |       ^~~~~~~~
+src/cryptor.cpp:145:23: note: in expansion of macro ‘if_into_it’
+  145 |       opt_in_optstr = if_into_it(optstring,cdr(entry));
+      |                       ^~~~~~~~~~
+src/cryptor.cpp:39:3: note: to match this ‘{’
+   39 |   {      \
+      |   ^
+src/cryptor.cpp:145:23: note: in expansion of macro ‘if_into_it’
+  145 |       opt_in_optstr = if_into_it(optstring,cdr(entry));
+      |                       ^~~~~~~~~~
+src/cryptor.cpp:40:7: error: cannot convert ‘<brace-enclosed initializer list>’ to ‘const char*’ in assignment
+   40 |       unsigned short int cond = 0;  \
+      |       ^~~~~~~~
+src/cryptor.cpp:145:23: note: in expansion of macro ‘if_into_it’
+  145 |       opt_in_optstr = if_into_it(optstring,cdr(entry));
+      |                       ^~~~~~~~~~
+src/cryptor.cpp:44:15: error: ‘cond’ was not declared in this scope
+   44 |               cond=1;    \
+      |               ^~~~
+src/cryptor.cpp:145:23: note: in expansion of macro ‘if_into_it’
+  145 |       opt_in_optstr = if_into_it(optstring,cdr(entry));
+      |                       ^~~~~~~~~~
+src/cryptor.cpp:49:17: error: ‘cond’ was not declared in this scope
+   49 |       travel = (cond) ? travel : NULL;  \
+      |                 ^~~~
+src/cryptor.cpp:145:23: note: in expansion of macro ‘if_into_it’
+  145 |       opt_in_optstr = if_into_it(optstring,cdr(entry));
+      |                       ^~~~~~~~~~
+src/cryptor.cpp:149:13: error: invalid conversion from ‘const char*’ to ‘char*’ [-fpermissive]
+  149 |    optarg = *(&entry + 1);
+      |             ^~~~~~~~~~~~~
+      |             |
+      |             const char*
+src/cryptor.cpp:36:20: error: invalid types ‘int[int]’ for array subscript
+   36 | #define car(x) (x[0])
+      |                    ^
+src/cryptor.cpp:167:11: note: in expansion of macro ‘car’
+  167 |       if (car((char **)&cdr(entry) + 1) != '\0') {
+      |           ^~~
+src/cryptor.cpp:170:11: error: invalid conversion from ‘void*’ to ‘char’ [-fpermissive]
+  170 |  optopt = (void *)entry;
+      |           ^~~~~~~~~~~~~
+      |           |
+      |           void*
+src/cryptor.cpp:40:7: error: expected primary-expression before ‘unsigned’
+   40 |       unsigned short int cond = 0;  \
+      |       ^~~~~~~~
+src/cryptor.cpp:173:18: note: in expansion of macro ‘if_into_it’
+  173 |  opt_in_optstr = if_into_it(optstring,car(entry));
+      |                  ^~~~~~~~~~
+src/cryptor.cpp:40:7: error: expected ‘}’ before ‘unsigned’
+   40 |       unsigned short int cond = 0;  \
+      |       ^~~~~~~~
+src/cryptor.cpp:173:18: note: in expansion of macro ‘if_into_it’
+  173 |  opt_in_optstr = if_into_it(optstring,car(entry));
+      |                  ^~~~~~~~~~
+src/cryptor.cpp:39:3: note: to match this ‘{’
+   39 |   {      \
+      |   ^
+src/cryptor.cpp:173:18: note: in expansion of macro ‘if_into_it’
+  173 |  opt_in_optstr = if_into_it(optstring,car(entry));
+      |                  ^~~~~~~~~~
+src/cryptor.cpp:40:7: error: cannot convert ‘<brace-enclosed initializer list>’ to ‘const char*’ in assignment
+   40 |       unsigned short int cond = 0;  \
+      |       ^~~~~~~~
+src/cryptor.cpp:173:18: note: in expansion of macro ‘if_into_it’
+  173 |  opt_in_optstr = if_into_it(optstring,car(entry));
+      |                  ^~~~~~~~~~
+src/cryptor.cpp:44:15: error: ‘cond’ was not declared in this scope
+   44 |               cond=1;    \
+      |               ^~~~
+src/cryptor.cpp:173:18: note: in expansion of macro ‘if_into_it’
+  173 |  opt_in_optstr = if_into_it(optstring,car(entry));
+      |                  ^~~~~~~~~~
+src/cryptor.cpp:49:17: error: ‘cond’ was not declared in this scope
+   49 |       travel = (cond) ? travel : NULL;  \
+      |                 ^~~~
+src/cryptor.cpp:173:18: note: in expansion of macro ‘if_into_it’
+  173 |  opt_in_optstr = if_into_it(optstring,car(entry));
+      |                  ^~~~~~~~~~
+src/cryptor.cpp: At global scope:
+src/cryptor.cpp:183:3: error: expected declaration before ‘}’ token
+  183 |   } else {
+      |   ^
+src/cryptor.cpp:183:5: error: expected unqualified-id before ‘else’
+  183 |   } else {
+      |     ^~~~
+src/cryptor.cpp:189:3: error: expected unqualified-id before ‘++’ token
+  189 |   ++args_pos_record;
+      |   ^~
+src/cryptor.cpp:190:3: error: expected unqualified-id before ‘return’
+  190 |   return result;
+      |   ^~~~~~
+src/cryptor.cpp:191:1: error: expected declaration before ‘}’ token
+  191 | }
+      | ^
+src/cryptor.cpp: In function ‘void getopt_strerror()’:
+src/cryptor.cpp:200:5: error: ‘cerr’ was not declared in this scope; did you mean ‘std::cerr’?
+  200 |     cerr<<"option "<<static_cast<char>(optopt)<<" unknown."<<endl;
+      |     ^~~~
+      |     std::cerr
+In file included from src/cryptor.cpp:19:
+/usr/local/include/c++/9.3.0/iostream:62:18: note: ‘std::cerr’ declared here
+   62 |   extern ostream cerr;  /// Linked to standard error (unbuffered)
+      |                  ^~~~
+src/cryptor.cpp:200:62: error: ‘endl’ was not declared in this scope; did you mean ‘std::endl’?
+  200 |     cerr<<"option "<<static_cast<char>(optopt)<<" unknown."<<endl;
+      |                                                              ^~~~
+      |                                                              std::endl
+In file included from /usr/local/include/c++/9.3.0/iostream:39,
+                 from src/cryptor.cpp:19:
+/usr/local/include/c++/9.3.0/ostream:599:5: note: ‘std::endl’ declared here
+  599 |     endl(basic_ostream<_CharT, _Traits>& __os)
+      |     ^~~~
+src/cryptor.cpp:208:48: error: invalid static_cast from type ‘char’ to type ‘char*’
+  208 |     cerr<<"option "<<static_cast<char *>(optopt)<<" is not an option."<<endl;
+      |                                                ^
+src/cryptor.cpp: In function ‘int getopt(int, char* const*, const char*)’:
+src/cryptor.cpp:182:5: warning: control reaches end of non-void function [-Wreturn-type]
+  182 |     }
+      |     ^
+make: *** [cryptor.o] Error 1
