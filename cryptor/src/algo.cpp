@@ -112,13 +112,17 @@ namespace cryptor {
   void Cryptor::sort_hashlist(void){
 
     unsigned short int index(0);
-    char i='\0';
+    char i = '\0',j = '\0';
 
     for (index = 0; index < _list_length; ++index) {
       if (index + _resort_distance < _list_length) {
 	i = _hashlist_of_p2c[index];
-	_hashlist_of_p2c[index] = _hashlist_of_p2c[index + _resort_distance];
-	_hashlist_of_p2c[index + _resort_distance] = i;
+	j = _hashlist_of_p2c[index + _resort_distance];
+
+	if (j != '\0') {
+	  _hashlist_of_p2c[index] = j;
+	  _hashlist_of_p2c[index + _resort_distance] = i;
+	}
       }
       else
 	break;
@@ -127,8 +131,12 @@ namespace cryptor {
     for (index = 0; index < _list_length; ++index) {
       if (index + _resort_distance < _list_length) {
 	i = _hashlist_of_k2c[index];
-	_hashlist_of_k2c[index] = _hashlist_of_k2c[index + _resort_distance];
-	_hashlist_of_k2c[index + _resort_distance] = i;
+	j = _hashlist_of_k2c[index + _resort_distance];
+
+	if (j != '\0') {
+	  _hashlist_of_k2c[index] = _hashlist_of_k2c[index + _resort_distance];
+	  _hashlist_of_k2c[index + _resort_distance] = i;
+	}
       }
       else
 	break;
