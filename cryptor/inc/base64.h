@@ -35,7 +35,7 @@ namespace base64 {
  *	Len_Buff must greater than Length-of-Data in 1/3 multiple.
  */ 
 
-char *base64_encode(const char *PlainText,char *Buffer,size_t Len_Buff);
+char *base64_encode(const char *plaintext,char *buffer,size_t buffer_len);
 /*
  * Encode for base64.
  *  Per three bytes as a group,all is 24bits,and per six bits to make mapping with table.
@@ -45,7 +45,7 @@ char *base64_encode(const char *PlainText,char *Buffer,size_t Len_Buff);
  * Return the address of Buffer on succeed,return NULL on failed.
  */ 
 
-char *base64_decode(const char *CipherText,char *Buffer,size_t Len_Buff);
+ char *base64_decode(const char *ciphertext,char *buffer,size_t buffer_len);
 /*
  * Decode for base64.
  * Decode must scan bytes to search 0x00 byte and delete them,and then do decoding.

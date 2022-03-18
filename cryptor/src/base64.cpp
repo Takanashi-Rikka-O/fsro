@@ -25,285 +25,166 @@
 namespace base64 {
 
 /* Data structures */
-static const char *BASE64_MAP = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";	/* Mapping table,length is 65Bytes. */
-
-/* Functions definition. */
-
-/*
-static unsigned short int _Binary_Calculater_(const char *Binary,unsigned short int Length);
-*
- * I think that need a binary calculating algorithm to help me get a decide number.
- * So,I had made this function.
- *
-
-static unsigned short int _Binary_Calculater_(const char *Binary,unsigned short int Length)
-{
-	unsigned short int Result(0);	// For return.	
-	unsigned short int PowerOf2(1);	// 2'0 power.
-
-	//	Env
-
-	*
- 	 * I made the cycle to calculating index-calculation-in-based-2 together.
- 	 * Ande before return,calculate the 2'0(1) multipes Binary's head element.
- 	 * This method could prevent wasting.
- 	 *
-	for (unsigned short int Index(1); Index < Length; ++Index)
-	{
-		PowerOf2*=2;	// Index calculation in based 2.
-		Result+=(Binary[Index]-'0')*PowerOf2;	// Convert.
-	}
-	//	Primary
-
-	return (Binary[0]-'0')*1+Result;
-	//	Return
-} 
-*/
-
-static unsigned short int _Search_Index_(char c);
-static unsigned short int _Search_Index_(char c)
-{
-
-	unsigned short int Scriptor(0);	// Init.
-
-	//	Env
-
-	for (unsigned short index(0); c != '\0' && index < 64; ++index)
-		if (c == BASE64_MAP[index])
-		{
-			Scriptor=index;
-			break;
-		}
-		else;
-
-	//	Primary
+  static const char *BASE64_MAP = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";	/* Mapping table,length is 65Bytes. */
 
 
-	return Scriptor;
-	//	Return
-}
+#define index_of_map(c)			\
+  ({					\
+  unsigned short int index(0);		\
+  const char *base64map(BASE64_MAP);	\
+  for (index = 0; *base64map != '\0';	\
+       ++base64map,index++)		\
+    if (*base64map == c)		\
+      break;				\
+  index + 0;				\
+  })
 
-char *base64_encode(const char *PlainText,char *Buffer,size_t Len_Buff)
-{
-	/*
-	 * Return Buffer on success,return NULL on failed.
-	 * Calculate quotient and remainder for PlainText.
-	 * If append zero byte,then append '=' number as same with zero bytes.
-	 * Must to alloc memory.
-	 * Use '=' to instead mapping for zero byte.
-	 * Buffer's length must greater than PlainText in multiple of 4/3.
-	 */
+#define next_address(src,displacement)	\
+  ((src) + (displacement))
 
-	char *TempBuff(NULL);	// For alloc memory.
-	uint16_t PlainLen(0);	// For length.
-	uint16_t Quotient(0),Remainder(0);	// For calculating.
-	int32_t Value1(0),Value2(0),Value3(0);	// For temporarily save.
-	int32_t BitValue(0);	// For bit operate.
-	uint16_t BuffINDEX(0);	// Buffer pointer.
+#define first_of(x)	(*(x))
+#define second_of(x)	(*((x) + 1))
+#define third_of(x)	(*((x) + 2))
+#define fourth_of(x)	(*((x) + 3))
 
-	//	Env
-	
-	/* Pointer must not NULL */
-	if (PlainText == NULL || Buffer == NULL)
-		return NULL;
-	else;
+  char *base64_encode(const char *plaintext,char *buffer,size_t buffer_len){
+    const char *entry(NULL);
+    char *encode_buffer(NULL),*return_value(NULL);
 
-	/* Get PlainText length. */
-	PlainLen=strlen(PlainText);
-	
-	/* Check Len_Buff */
-	if (Len_Buff <= PlainLen*4/3)
-		return NULL;
-	else;
+    // three element form a component
+    unsigned char first('\0'),second('\0'),third('\0');
 
-	/* To get memory. */
-	if ((TempBuff=new char[PlainLen+3]) == NULL)
-		return NULL;
-	else
-		Remainder=PlainLen-(PlainLen/3)*3,	// Calculating quotient and remainder.
-		Quotient=(Remainder == 0)?PlainLen/3:PlainLen/3+1;
-	
-	/* Copy PlainText */
-	strncpy(TempBuff,PlainText,PlainLen);
+    unsigned char map_index('\0');
+    unsigned short int plain_len(0),encode_buffer_index(0);
+    unsigned short int &buffer_index = encode_buffer_index;
+    unsigned short int quotient(0),remainder(0);
 
-	/* To checking whether need to append zero byte. */
-	// If Remainder is equal to 0,then no append.
-	for (uint16_t Count(0); Count < 3-Remainder && Remainder != 0; ++Count)
-		*(TempBuff+PlainLen+Count)='\0';
+    // NULL target
+    if (plaintext == NULL || buffer == NULL)
+      return NULL;
 
-	/* Cycle to translate */
-	/*
-	 * Displacement used to accessing the memory,Counter as the Cycle count number.
-	 */ 
-	for (uint16_t Counter(0),Displacement(0); Counter < Quotient; ++Counter,Displacement+=3)
-	{
-		/* Three bytes. */
-		Value1=(TempBuff+Displacement)[0],Value2=(TempBuff+Displacement)[1],Value3=(TempBuff+Displacement)[2];
+    plain_len = strlen(plaintext);
+    encode_buffer = new char[plain_len + 16];
 
-		if (Remainder != 0) {
-		  /* First */
-		  BitValue=Value1 >> 2;
-		  if (BitValue == 0)
-		    break;
-		  else
-		    Buffer[BuffINDEX++]=BASE64_MAP[BitValue];
+    if (!encode_buffer)
+      return NULL;
 
-		  /* Second */
-		  BitValue=((Value1 & 3) << 4) | (Value2 >> 4);
-		  if (BitValue == 0)
-		    break;
-		  else
-		    Buffer[BuffINDEX++]=BASE64_MAP[BitValue];
+    // buffer space is not enough
+    if (buffer_len < plain_len * 4)
+      goto base64_encode_exit;
 
-		/* Third */
-		  BitValue=((Value2 & 0x0F) << 2) | ((Value3 & 0xC0) >> 6);
-		  if (BitValue == 0)
-		    break;
-		  else
-		    Buffer[BuffINDEX++]=BASE64_MAP[BitValue];
+    strncpy(encode_buffer,plaintext,plain_len);
+    quotient = plain_len / 3;
+    remainder = plain_len - (plain_len / 3) * 3;
+    if (remainder != 0) {
+      // replenish zero.
+      encode_buffer_index = plain_len;
+      for (unsigned short int count(0); count < 3 - remainder; ++count)
+	encode_buffer[encode_buffer_index++] = '\0';
+      encode_buffer[encode_buffer_index] = '\0';	// end as '\0'
+      quotient = encode_buffer_index / 3;
+    }
 
-		/* Fourth */
-		  BitValue=(Value3 & 0x3F);
-		  if (BitValue == 0)
-		    break;
-		  else
-		    Buffer[BuffINDEX++]=BASE64_MAP[BitValue];
-		} else {
+    entry = encode_buffer;
+    buffer_index = 0;
+    for (unsigned short int iterator(0); iterator < quotient; ++iterator) {
+      first = first_of(entry);
+      second = second_of(entry);
+      third = third_of(entry);
 
-		  /* First */
-		  BitValue=Value1 >> 2;
-		  Buffer[BuffINDEX++]=BASE64_MAP[BitValue];
+      map_index = (unsigned char)(first >> 2);
+      buffer[buffer_index++] = BASE64_MAP[map_index];
 
-		  /* Second */
-		  BitValue=((Value1 & 3) << 4) | (Value2 >> 4);
-		  Buffer[BuffINDEX++]=BASE64_MAP[BitValue];
+      map_index = (unsigned char)((unsigned char)(first << 6) >> 2) | (unsigned char)(second >> 4);
+      buffer[buffer_index++] = BASE64_MAP[map_index];
 
-		/* Third */
-		  BitValue=((Value2 & 0x0F) << 2) | ((Value3 & 0xC0) >> 6);
-		  Buffer[BuffINDEX++]=BASE64_MAP[BitValue];
+      map_index = (unsigned char)((unsigned char)(second << 4) >> 2) | (unsigned char)(third >> 6);
+      buffer[buffer_index++] = BASE64_MAP[map_index];
 
-		/* Fourth */
-		  BitValue=(Value3 & 0x3F);
-		  Buffer[BuffINDEX++]=BASE64_MAP[BitValue];
+      map_index = (unsigned char)(third << 2) >> 2;
+      buffer[buffer_index++] = BASE64_MAP[map_index];
 
-		}
-	}
+      entry = next_address(entry,3);
+    }
 
-	/* To append '=' in buffer. */
-	for (uint16_t Count(0); Count < 3-Remainder && Remainder != 0; ++Count)
-		Buffer[BuffINDEX++]='=';
-	Buffer[BuffINDEX]='\0';	// End of string.
+    for (unsigned short int count(0),index(buffer_index - 1); remainder != 0 && count < 3 - remainder;
+	 ++count)
+      buffer[index--] = '=';
+    buffer[buffer_index] = '\0';
+    return_value = buffer;
 
 
-	//	Primary
+  base64_encode_exit:
+    delete[] encode_buffer;
+    return return_value;
+  }
 
-	/* Recycle */
-	delete[] TempBuff;
-	TempBuff=NULL;
+  char *base64_decode(const char *ciphtertext,char *buffer,size_t buffer_len){
+    const char *entry(NULL);
+    char *decode_buffer(NULL),*return_value(NULL);
+    size_t ciphter_len(0);
 
-	return Buffer;
-	//	Return
-}
+    // four elements form a component
+    unsigned char first('\0'),second('\0'),third('\0'),fourth('\0');
+    unsigned char map_index1(0),map_index2(0),map_index3(0),map_index4(0);
+    unsigned short int quotient(0),remainder(0),decode_buffer_index(0);
+    unsigned short int &buffer_index = decode_buffer_index;
 
-char *base64_decode(const char *CipherText,char *Buffer,size_t Len_Buff)
-{
-	/*
-	 * CipherText must be length equal to a value multiple of 4.
-	 * Return Buffer on succeed,return NULL on failed.
-	 * Would calculate Quotient and Remainder.
-	 * Do count for the number of '='.
-	 * Translate '=' to zero byte.
-	 * So the least one in array must contains bits of zero byte.
-	 */ 
+    if (ciphtertext == NULL || buffer == NULL)
+      return NULL;
 
-	uint16_t Quotient(0),Remainder(0);	// To save calculate result.
-	uint16_t CipherLen(0);	// For ciphertext length.
-	int32_t Value1(0),Value2(0),Value3(0),Value4(0);	// For four values.
-	int32_t BitValue(0);	// For convert temporary.
-	unsigned short int BuffINDEX(0);	// For buffer pointer.
-	char *TempMEM(NULL);	// For save CipherText.
-	char *Pointer_To_Return(NULL);	// Pointer to return.
+    ciphter_len = strlen(ciphtertext);
+    quotient = ciphter_len / 4;
+    remainder = ciphter_len - (ciphter_len / 4) * 4;
 
-	//	Env
+    // output buffer is not enough
+    if (buffer_len < (quotient * 3))
+      return NULL;
 
-	/* Pointer must not NULL */
-	if (CipherText == NULL || Buffer == NULL)
-		return Pointer_To_Return;
-	else;
+    // It's not a right string formed by base64
+    if (remainder != 0)
+      return NULL;
 
-	
-	/* Get CipherText len. */
-	CipherLen=strlen(CipherText);
+    decode_buffer = new char[ciphter_len];
+    if (!decode_buffer)
+      goto base64_decode_exit;
 
-	/* Len_Buff must length than a value multiple in 3/4 of CipherText length. */
-	if (Len_Buff <= CipherLen*3/4)
-		return Pointer_To_Return;
-	else
-		Quotient=CipherLen/4,
-		Remainder=CipherLen-(CipherLen/4)*4;	// Calculate values.
+    strncpy(decode_buffer,ciphtertext,ciphter_len);
+    // delete zero
+    for (unsigned short int index(ciphter_len - 1); 
+	 decode_buffer[index] == '=' && index > 0; --index)
+      decode_buffer[index] = *BASE64_MAP;
 
-	/* Checking Remainder. */
-	if (Remainder != 0)	// Fault length.
-		return Pointer_To_Return;
-	else;
-	
-	if ((TempMEM=new char[CipherLen+1]) == NULL)
-		return Pointer_To_Return;
-	else;
+    entry = decode_buffer;
+    buffer_index = 0;
+    for (unsigned short int count(0); count < quotient; ++count) {
+      first = first_of(entry);
+      second = second_of(entry);
+      third = third_of(entry);
+      fourth = fourth_of(entry);
 
-	strncpy(TempMEM,CipherText,CipherLen);	// Copy.
+      map_index1 = index_of_map(first);
+      map_index2 = index_of_map(second);
+      map_index3 = index_of_map(third);
+      map_index4 = index_of_map(fourth);
 
+      if (map_index1 >= 64 || map_index2 >= 64 ||
+	  map_index3 >= 64 || map_index4 >= 64)
+	goto base64_decode_exit;
 
-	/* To scan '=' and translate them */
-	--CipherLen;
-	while (*(TempMEM+CipherLen) == '=')
-		*(TempMEM+CipherLen--)='\0';
+      buffer[buffer_index++] = (unsigned char)(map_index1 << 2) | (unsigned char)(map_index2 >> 4);
+      buffer[buffer_index++] = (unsigned char)(map_index2 << 4) | (unsigned char)(map_index3 >> 2);
+      buffer[buffer_index++] = (unsigned char)(map_index3 << 6) | map_index4;
 
-	// After this cycle end,CipherLen had point to a character it is not '='.
+      entry = next_address(entry,4);
+    }
 
-	Pointer_To_Return=Buffer;
-	for (uint16_t Displacement(0),Counter(0); Counter < Quotient; ++Counter,Displacement+=4)
-	{
-		/* To get four values. */
-		Value1=_Search_Index_((TempMEM+Displacement)[0]),Value2=_Search_Index_((TempMEM+Displacement)[1]),
-		Value3=_Search_Index_((TempMEM+Displacement)[2]),Value4=_Search_Index_((TempMEM+Displacement)[3]);
+    buffer[buffer_index] = '\0';
+    return_value = buffer;
 
-		/* In the converting,if BitValue is equal to zero,then break cycle. */
-
-		/* First */
-		BitValue=(Value1 << 2) | (Value2 >> 4);
-		if (BitValue == 0)
-		  break;
-		else
-		  Buffer[BuffINDEX++]=BitValue;
-	
-		/* Second */
-		BitValue=(Value2 << 4) | (Value3 >>2);
-		if (BitValue == 0)
-		  break;
-		else
-		  Buffer[BuffINDEX++]=BitValue;
-
-		/* Third */
-		BitValue=(Value3 << 6) | Value4;
-		if (BitValue == 0)
-		  break;
-		else
-		  Buffer[BuffINDEX++]=BitValue;
-
-	}
-
-	Buffer[BuffINDEX]='\0';	// End string.
-
-
-	//	Primary
-
-	/* Recycle. */
-	delete[] TempMEM;
-	TempMEM=NULL;
-
-	return Pointer_To_Return;
-	//	Return
-}
+  base64_decode_exit:
+    delete[] decode_buffer;
+    return return_value;
+  }
 
 }	/* End named space */

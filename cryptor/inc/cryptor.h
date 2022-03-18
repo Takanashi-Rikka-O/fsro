@@ -44,7 +44,7 @@ using namespace std;
       const char *travel = list;		\
       while (*travel != '\0') {			\
           if (*travel == c) {			\
-              cond=1;				\
+              cond = 1;				\
               break;				\
           }					\
           else ++travel;			\
