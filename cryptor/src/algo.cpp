@@ -114,6 +114,11 @@ namespace cryptor {
     unsigned short int index(0);
     char i = '\0',j = '\0';
 
+    // This means dont need to sort them.
+    if (_resort_distance == 0)
+      return;
+
+    // p2c
     for (index = 0; index < _list_length; ++index) {
       if (index + _resort_distance < _list_length) {
 	i = _hashlist_of_p2c[index];
@@ -128,6 +133,7 @@ namespace cryptor {
 	break;
     }
 
+    // k2c
     for (index = 0; index < _list_length; ++index) {
       if (index + _resort_distance < _list_length) {
 	i = _hashlist_of_k2c[index];
@@ -149,16 +155,19 @@ namespace cryptor {
     sort_hashlist();
   }
 
+  // suppose target is 'c'
+  // then,there has c * scale / division = quotient --- remainder
+
   char *Cryptor::encode(const char *input_buffer,size_t input_len,
 			char *output_buffer,size_t output_len)
   {
     long int after_scale(0);
-    int quotient_value(0),remainde_value(0);
+    int quotient_value(0),remainder_value(0);
     char *after_base64_encode(NULL);
 
     // There is not enough space to save data that had encoded.
-    //    if (output_len / input_len < 4)
-    //      return NULL;
+    if (output_len / input_len < 4)
+          return NULL;
 
     memset(base64_buffer,'\0',TEMPBUFFER_SIZE);
 
@@ -166,14 +175,11 @@ namespace cryptor {
     for (unsigned short int input_index(0),r(1),q(0); input_index < input_len; ++input_index) {
       after_scale = scale_element(static_cast<long int>(input_buffer[input_index]));
       quotient_value = after_scale / _division;
-      remainde_value = remainder(after_scale,_division);
-
-      output_buffer[r] = _hashlist_of_p2c[remainde_value];
+      remainder_value = remainder(after_scale,_division);
+      output_buffer[r] = _hashlist_of_p2c[remainder_value];
       output_buffer[q] = _hashlist_of_k2c[quotient_value];
-
       r+=2;
       q+=2;
-
     }
 
     after_base64_encode=base64_encode(output_buffer,base64_buffer,TEMPBUFFER_SIZE);
@@ -182,8 +188,6 @@ namespace cryptor {
       return NULL;
 
     memset(output_buffer,'\0',output_len);
-
-
     return strncpy(output_buffer,after_base64_encode,strlen(after_base64_encode));
   }
 
@@ -191,13 +195,13 @@ namespace cryptor {
 			char *output_buffer,size_t output_len)
   {
     short int tempvalue(0);
-    unsigned short int quotient_value(0),remainde_value(0),output_index(0);
+    unsigned short int quotient_value(0),remainder_value(0),output_index(0);
     char rc('\0'),qc('\0');
     char *after_base64_decode(NULL);
 
     // The encoding will mappes an element to two elements.
-    //    if (input_len / output_len > 4)
-    //  return NULL;
+    if (input_len / output_len > 4)
+	  return NULL;
 
     memset(base64_buffer,'\0',TEMPBUFFER_SIZE);
 
@@ -213,18 +217,14 @@ namespace cryptor {
       // Zero is not in our hashlist.In the case,must arrived end of input.
       if (qc == '\0')
 	break;
-
       position(_hashlist_of_p2c,rc,tempvalue);
-      remainde_value = (tempvalue != -1) ? tempvalue : 0;
-
+      remainder_value = (tempvalue != -1) ? tempvalue : 0;
       position(_hashlist_of_k2c,qc,tempvalue);
       quotient_value = (tempvalue != -1) ? tempvalue : 0;
-
-      output_buffer[output_index++] = (quotient_value * _division + remainde_value) / _scale;
+      output_buffer[output_index++] = (quotient_value * _division + remainder_value) / _scale;
     }
 
     output_buffer[output_index] = '\0';
-
     return output_buffer;
   }
 

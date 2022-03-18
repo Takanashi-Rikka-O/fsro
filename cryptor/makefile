@@ -1,9 +1,10 @@
+# make cryptor
+
 all:cryptor
 
 objects:=cryptor.o algo.o base64.o
 CC:=g++
 CCFLAGS:=-g -Iinc/
-
 
 vpath %.cpp src
 vpath %.h   inc

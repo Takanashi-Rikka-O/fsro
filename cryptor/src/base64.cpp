@@ -140,38 +140,53 @@ char *base64_encode(const char *PlainText,char *Buffer,size_t Len_Buff)
 		/* Three bytes. */
 		Value1=(TempBuff+Displacement)[0],Value2=(TempBuff+Displacement)[1],Value3=(TempBuff+Displacement)[2];
 
-		/* First */
-		BitValue=Value1 >> 2;
-		
-		if (BitValue == 0)
-			break;
-		else
-			Buffer[BuffINDEX++]=BASE64_MAP[BitValue];
+		if (Remainder != 0) {
+		  /* First */
+		  BitValue=Value1 >> 2;
+		  if (BitValue == 0)
+		    break;
+		  else
+		    Buffer[BuffINDEX++]=BASE64_MAP[BitValue];
 
-
-		/* Second */
-		BitValue=((Value1 & 3) << 4) | (Value2 >> 4);
-
-		if (BitValue == 0)
-			break;
-		else
-			Buffer[BuffINDEX++]=BASE64_MAP[BitValue];
+		  /* Second */
+		  BitValue=((Value1 & 3) << 4) | (Value2 >> 4);
+		  if (BitValue == 0)
+		    break;
+		  else
+		    Buffer[BuffINDEX++]=BASE64_MAP[BitValue];
 
 		/* Third */
-		BitValue=((Value2 & 0x0F) << 2) | ((Value3 & 0xC0) >> 6);
-
-		if (BitValue == 0)
-			break;
-		else
-			Buffer[BuffINDEX++]=BASE64_MAP[BitValue];
+		  BitValue=((Value2 & 0x0F) << 2) | ((Value3 & 0xC0) >> 6);
+		  if (BitValue == 0)
+		    break;
+		  else
+		    Buffer[BuffINDEX++]=BASE64_MAP[BitValue];
 
 		/* Fourth */
-		BitValue=(Value3 & 0x3F);
+		  BitValue=(Value3 & 0x3F);
+		  if (BitValue == 0)
+		    break;
+		  else
+		    Buffer[BuffINDEX++]=BASE64_MAP[BitValue];
+		} else {
 
-		if (BitValue == 0)
-			break;
-		else
-			Buffer[BuffINDEX++]=BASE64_MAP[BitValue];
+		  /* First */
+		  BitValue=Value1 >> 2;
+		  Buffer[BuffINDEX++]=BASE64_MAP[BitValue];
+
+		  /* Second */
+		  BitValue=((Value1 & 3) << 4) | (Value2 >> 4);
+		  Buffer[BuffINDEX++]=BASE64_MAP[BitValue];
+
+		/* Third */
+		  BitValue=((Value2 & 0x0F) << 2) | ((Value3 & 0xC0) >> 6);
+		  Buffer[BuffINDEX++]=BASE64_MAP[BitValue];
+
+		/* Fourth */
+		  BitValue=(Value3 & 0x3F);
+		  Buffer[BuffINDEX++]=BASE64_MAP[BitValue];
+
+		}
 	}
 
 	/* To append '=' in buffer. */
@@ -258,23 +273,23 @@ char *base64_decode(const char *CipherText,char *Buffer,size_t Len_Buff)
 		/* First */
 		BitValue=(Value1 << 2) | (Value2 >> 4);
 		if (BitValue == 0)
-			break;
+		  break;
 		else
-			Buffer[BuffINDEX++]=BitValue;
+		  Buffer[BuffINDEX++]=BitValue;
 	
 		/* Second */
 		BitValue=(Value2 << 4) | (Value3 >>2);
 		if (BitValue == 0)
-			break;
+		  break;
 		else
-			Buffer[BuffINDEX++]=BitValue;
+		  Buffer[BuffINDEX++]=BitValue;
 
 		/* Third */
 		BitValue=(Value3 << 6) | Value4;
 		if (BitValue == 0)
-			break;
+		  break;
 		else
-			Buffer[BuffINDEX++]=BitValue;
+		  Buffer[BuffINDEX++]=BitValue;
 
 	}
 

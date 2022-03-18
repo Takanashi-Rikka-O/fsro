@@ -70,7 +70,7 @@ namespace cryptor {
     char *encode(const char *input_buffer,size_t input_len,
 		 char *output_buffer,size_t output_len);
 
-    template<typename TYPE> TYPE scale_element(TYPE x){
+    template<typename TYPE> constexpr TYPE scale_element(TYPE x){
       return (x * _scale);
     }
 
