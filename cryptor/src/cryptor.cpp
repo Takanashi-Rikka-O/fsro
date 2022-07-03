@@ -109,6 +109,13 @@ int main(int argc,char *argv[]){
 
   case ENCODE_CYCLE:
     while ((the_argument = read_plaintext_file(filename)) != NULL) {
+
+      /* if next input less than last,todecode will be overlapped.
+       * that will trigger output error.
+       */
+      memset(toencode,'\0',ENCODEBUFF_SIZE);
+      memset(todecode,'\0',DECODEBUFF_SIZE);
+
       if (strncpy(toencode,the_argument,strlen(the_argument))) {
 	if (cpt.encode(toencode,strlen(toencode),todecode,DECODEBUFF_SIZE))
 	  cout<<todecode<<endl;
@@ -118,6 +125,7 @@ int main(int argc,char *argv[]){
       else
 	return -COPY_ERR;
     }
+    read_plaintext_file(NULL);	/* noticing for close file */
     break;
 
   default:
@@ -231,8 +239,8 @@ static void getopt_strerror(void){
 static const char *read_plaintext_file(const char *filename){
 
   static ifstream input_file;
-  static char filebuff[ENCODE_BUFFSIZE];
-  memset(filebuff,'\0',ENCODE_BUFFSIZE);
+  static char filebuff[ENCODEBUFF_SIZE];
+  memset(filebuff,'\0',ENCODEBUFF_SIZE);
 
   if (NULL == filename) {
     input_file.close();
@@ -245,7 +253,7 @@ static const char *read_plaintext_file(const char *filename){
       return NULL;      
   }
 
-  input_file.getline(filebuff,ENCODE_BUFFSIZE);
+  input_file.getline(filebuff,ENCODEBUFF_SIZE);
   if (input_file.eof() || input_file.bad()) {
     input_file.close();
     return NULL;

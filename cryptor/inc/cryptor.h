@@ -19,6 +19,7 @@
 
 #include"algo.h"
 #include"base64.h"
+#include<fstream>
 
 using namespace cryptor;
 using namespace std;
