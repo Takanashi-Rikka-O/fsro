@@ -21,6 +21,8 @@
 static int getopt(int argc,char * const argv[],const char *optstring);
 static void getopt_strerror(void);
 
+static const char *read_plaintext_file(const char *filename);
+
 static int option_err = 0;
 static const char *optarg = NULL;
 static long int optopt = '\0';
@@ -31,10 +33,12 @@ static char todecode[DECODEBUFF_SIZE];
 
 int main(int argc,char *argv[]){
   char option('\0');
-  enum cryptor_mode {INIT = -1,ENCODE = 0,DECODE = 1};
+  enum cryptor_mode {INIT = -1, ENCODE = 0, DECODE = 1, ENCODE_CYCLE};
   cryptor_mode eord(INIT);	// encode(0) or decode(1).
   Cryptor cpt;
   const char *the_argument(NULL);
+  const char *encode_from_file(NULL);
+  const char *filename(NULL);
 
   if (argc < 3)
     cryptor_help();
@@ -44,7 +48,7 @@ int main(int argc,char *argv[]){
     return -PROGRAM_ERR;
 
   // cycyle to check options
-  while ((option = getopt(argc,argv,"e:d:s:")) != -1) {
+  while ((option = getopt(argc,argv,"e:d:s:f:")) != -1) {
     switch (option) {
     case ENCODE_OPT:
       if (eord == DECODE)	// It will be activity just the first.
@@ -66,6 +70,11 @@ int main(int argc,char *argv[]){
 
     case SETSORT_OPT:
       cpt.set_keyword_value((*optarg) - '0');
+      break;
+
+    case ENCODE_FROM_FILE:
+      eord = ENCODE_CYCLE;
+      filename = optarg;
       break;
 
     default :
@@ -96,6 +105,19 @@ int main(int argc,char *argv[]){
     }
     else
       return -COPY_ERR;
+    break;
+
+  case ENCODE_CYCLE:
+    while ((the_argument = read_plaintext_file(filename)) != NULL) {
+      if (strncpy(toencode,the_argument,strlen(the_argument))) {
+	if (cpt.encode(toencode,strlen(toencode),todecode,DECODEBUFF_SIZE))
+	  cout<<todecode<<endl;
+	else
+	  return -ENCODE_ERR;
+      }
+      else
+	return -COPY_ERR;
+    }
     break;
 
   default:
@@ -204,4 +226,31 @@ static void getopt_strerror(void){
     cerr<<"analyzing unknown error."<<endl;
   }
 
+}
+
+static const char *read_plaintext_file(const char *filename){
+
+  static ifstream input_file;
+  static char filebuff[ENCODE_BUFFSIZE];
+  memset(filebuff,'\0',ENCODE_BUFFSIZE);
+
+  if (NULL == filename) {
+    input_file.close();
+    return NULL;
+  }
+
+  if (!input_file.is_open()) {
+    input_file.open(filename,ios_base::in);
+    if (!input_file.is_open())
+      return NULL;      
+  }
+
+  input_file.getline(filebuff,ENCODE_BUFFSIZE);
+  if (input_file.eof() || input_file.bad()) {
+    input_file.close();
+    return NULL;
+  }
+
+
+  return filebuff;
 }

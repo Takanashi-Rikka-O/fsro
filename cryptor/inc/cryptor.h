@@ -23,9 +23,12 @@
 using namespace cryptor;
 using namespace std;
 
-#define ENCODE_OPT	'e'
-#define DECODE_OPT	'd'
-#define SETSORT_OPT	's'
+#define ENCODE_OPT		'e'
+#define DECODE_OPT		'd'
+#define SETSORT_OPT		's'
+
+/* this option requests a file-path */
+#define ENCODE_FROM_FILE	'f'
 
 #define OPT_UNKNOWN	1
 #define OPT_REQARG	2
