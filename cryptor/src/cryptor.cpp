@@ -253,12 +253,14 @@ static const char *read_plaintext_file(const char *filename){
       return NULL;      
   }
 
-  input_file.getline(filebuff,ENCODEBUFF_SIZE);
-  if (input_file.eof() || input_file.bad()) {
-    input_file.close();
-    return NULL;
-  }
-
+  /* Must skip the case is readed a blank to prevent divide trap */
+  do {
+    input_file.getline(filebuff,ENCODEBUFF_SIZE);
+    if (input_file.eof() || input_file.fail() || input_file.bad()) {
+      input_file.close();
+      return NULL;
+    }
+  } while (strlen(filebuff) == 0);
 
   return filebuff;
 }
