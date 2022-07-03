@@ -240,6 +240,7 @@ static const char *read_plaintext_file(const char *filename){
 
   static ifstream input_file;
   static char filebuff[ENCODEBUFF_SIZE];
+  size_t length(0);
   memset(filebuff,'\0',ENCODEBUFF_SIZE);
 
   if (NULL == filename) {
@@ -255,12 +256,17 @@ static const char *read_plaintext_file(const char *filename){
 
   /* Must skip the case is readed a blank to prevent divide trap */
   do {
+
     input_file.getline(filebuff,ENCODEBUFF_SIZE);
-    if (input_file.eof() || input_file.fail() || input_file.bad()) {
-      input_file.close();
-      return NULL;
-    }
-  } while (strlen(filebuff) == 0);
+    length = strlen(filebuff);
+    if (input_file.eof() || input_file.fail() || input_file.bad())
+      break;
+
+  } while (length == 0);
+
+  if (length <= 0)
+    return NULL;
+
 
   return filebuff;
 }
