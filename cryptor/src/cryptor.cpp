@@ -256,17 +256,14 @@ static const char *read_plaintext_file(const char *filename){
 
   /* Must skip the case is readed a blank to prevent divide trap */
   do {
-
+    if (input_file.eof() || input_file.fail())
+      break;
     input_file.getline(filebuff,ENCODEBUFF_SIZE);
     length = strlen(filebuff);
-    if (input_file.eof() || input_file.fail() || input_file.bad())
-      break;
-
   } while (length == 0);
 
-  if (length <= 0)
+  if (0 == length || input_file.bad())
     return NULL;
-
 
   return filebuff;
 }
